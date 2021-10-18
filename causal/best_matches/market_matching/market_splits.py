@@ -1,0 +1,3 @@
+class MarketSplits:
+    split = []
+    sizes = []

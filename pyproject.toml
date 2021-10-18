@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "ci_mm"
+version = "0.1.0"
+description = "Market matching and causal impact"
+authors = ["Sara G"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.7.1,<3.10"
+pandas = "^1.3.3"
+numpy = "^>=1.19.2,<1.20.0"
+dtw = "^1.4.0"
+tensorflow = "2.6"
+tfcausalimpact = "^0.0.9"
+pyreadr = "^0.4.2"
+pytest = "^6.2.5"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
