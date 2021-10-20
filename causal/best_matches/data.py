@@ -1,15 +1,13 @@
 import pandas as pd
-
+import numpy as np
 
 def check_data_inputs(df, id_var, matching_var, date_var):
-    if all([item in df.columns for item in [id_var,matching_var, date_var]]):
-        return True
-    else:
-        return False
+    if not all([item in df.columns for item in [id_var, matching_var, date_var]]):
+        raise ValueError("There are columns missing in the dataframe")
     
 def rename_cols_to_match_r(df, date_variable, id_variable, matching_variable):
     df_copy = df.copy()
-    col_map = {date_variable: 'date_var', id_variable: 'id_var', matching_variable: 'match_var'}
+    col_map = {id_variable: 'id_var', date_variable: 'date_var', matching_variable: 'match_var'}
     df_copy = df_copy.rename(columns=col_map)
     return df_copy
     
@@ -27,11 +25,27 @@ def reduce_df_width(df, id_variable, date_variable):
     
 
 
-def filter_dates(df, id_variable, date_variable, start_match_period, end_match_period):
+def filter_dates(df, date_variable, id_variable, start_match_period, end_match_period):
+
     # Find if data for each test store is present for start_match_period and end_match_period interval
-    # If not, assign it to a no_history list
-    # return the no_history list
-    pass
+    df_subset = df[(df[date_variable] >= start_match_period) &  (df[date_variable] <= end_match_period)]
+    
+    entities_with_no_history = list(np.setdiff1d(df[id_variable].unique(), df_subset[id_variable].unique()))
+
+    # If all entities have history
+    if len(entities_with_no_history) == 0:
+        print("All entities have history")
+        return entities_with_no_history
+
+    elif len(df_subset[id_variable].unique()) == 1:
+        raise ValueError("Only one entity found with history for the provided dates")
+
+    elif len(df_subset[id_variable].unique()) >=2 and len(df_subset[id_variable].unique()) < len(df[id_variable].unique()):
+        print("Some test entities do not have history for the dates provided")
+        return entities_with_no_history
+    else:
+        raise ValueError("One or less entitie(s) found with history for the provided dates")
+    
 
 
 class Data(object):
@@ -40,21 +54,21 @@ class Data(object):
         self.df = df
         
         # Check Inputs
-        self.check_df = check_data_inputs(df, params.id_variable, params.matching_variable, params.date_variable)
+        check_data_inputs(df, params.id_variable, params.matching_variable, params.date_variable)
         
-        if self.check_df:
-            #copy df and rename
-            self.df = rename_cols_to_match_r(self.df, params.date_variable, params.id_variable, params.matching_variable)
+        #copy df and rename
+        self.df = rename_cols_to_match_r(self.df, params.date_variable, params.id_variable, params.matching_variable)
             
-            #check for duplicates and raise error if so
-            assert_duplicates(df, params.id_variable, params.date_variable)
+        #check for duplicates and raise error if so
+        assert_duplicates(self.df, params.id_variable, params.date_variable)
             
-            #reduce_df_width(self.df, params.id_variable, params.date_variable)
+        #starting here, column names have changed to "id_var", "date_var" and "matching_var"
+        self.df = reduce_df_width(self.df, "id_var", "date_var")
             
-            #filter_dates(self.df)
+        # filtering for dates
+        self.history = filter_dates(self.df,"date_var", "id_var", params.start_match_period, params.end_match_period)
             
-            # TODO: assert there is data left
+        # TODO: assert there is data left
         
-        else : 
-            raise ValueError("There are columns missing in the dataframe") 
+        
 
