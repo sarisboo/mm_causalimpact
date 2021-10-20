@@ -44,7 +44,7 @@ def filter_dates(df, date_variable, id_variable, start_match_period, end_match_p
         print("Some test entities do not have history for the dates provided")
         return entities_with_no_history
     else:
-        raise ValueError("One or less entitie(s) found with history for the provided dates")
+        raise ValueError("0 entitie(s) found with history for the provided dates")
     
 
 
@@ -67,8 +67,6 @@ class Data(object):
             
         # filtering for dates
         self.history = filter_dates(self.df,"date_var", "id_var", params.start_match_period, params.end_match_period)
-            
-        # TODO: assert there is data left
         
         
 

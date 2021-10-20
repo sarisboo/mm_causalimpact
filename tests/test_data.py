@@ -37,4 +37,13 @@ def test_duplicates_in_data(example_weather_data):
 def test_all_entities_present(example_weather_data):
     data= Data(example_weather_data, Parameters(id_variable="Area", date_variable="Date", matching_variable="Mean_TemperatureF", start_match_period="2014-01-01", end_match_period="2014-08-01"))
     assert data.history == []
+
+def assert_no_entity_history(example_weather_data):
+    with pytest.raises(ValueError) as err:
+        data= Data(example_weather_data[example_weather_data["Area"] =="SFO"], Parameters(id_variable="Area", date_variable="Date", matching_variable="Mean_TemperatureF", start_match_period="2014-01-01", end_match_period="2014-08-01"))
+    assert str(err) == "Only one entity found with history for the provided dates"
     
+def assert_no_entity_history(example_weather_data):
+    with pytest.raises(ValueError) as err:
+        data= Data(example_weather_data[example_weather_data["Area"]=="Nuthin"][example_weather_data["Area"] =="SFO"], Parameters(id_variable="Area", date_variable="Date", matching_variable="Mean_TemperatureF", start_match_period="2014-01-01", end_match_period="2014-08-01"))
+    assert str(err) == "0 entitie(s) found with history for the provided dates"
