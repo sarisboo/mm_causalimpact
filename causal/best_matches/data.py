@@ -14,18 +14,23 @@ def rename_cols_to_match_r(df, date_variable, id_variable, matching_variable):
     return df_copy
     
 def assert_duplicates(df, id_variable, date_variable):
-    ddup_df = df.drop_duplicates()
-    try:
-        ddup_df.shape[0] < df.shape[0]
-    except:
+    ddup_df = df.drop_duplicates(inplace=False)
+    if ddup_df.shape[0] < df.shape[0]:
         raise ValueError("There are date/market duplicates in the data")
 
 
+
 def reduce_df_width(df, id_variable, date_variable):
-    pass
+    # First order by id_var and date_var
+    sortedby_id_date = df.sort_values([id_variable, date_variable])
+    return sortedby_id_date
+    
 
 
 def filter_dates(df, id_variable, date_variable, start_match_period, end_match_period):
+    # Find if data for each test store is present for start_match_period and end_match_period interval
+    # If not, assign it to a no_history list
+    # return the no_history list
     pass
 
 
@@ -44,11 +49,12 @@ class Data(object):
             #check for duplicates and raise error if so
             assert_duplicates(df, params.id_variable, params.date_variable)
             
-            #normalized_df = reduce_df_width(df, params.id_variable, params.date_variable)
+            #reduce_df_width(self.df, params.id_variable, params.date_variable)
             
-            #filtered_df = filter_dates(df)
+            #filter_dates(self.df)
             
             # TODO: assert there is data left
         
-        # else : raise ValueError 
+        else : 
+            raise ValueError("There are columns missing in the dataframe") 
 
